@@ -629,7 +629,7 @@ bool ASTJsonExporter::visit(InlineAssembly const& _node)
 
 	Json::Value externalReferencesJson = Json::arrayValue;
 
-	ranges::sort(externalReferences);
+	sort(externalReferences.begin(), externalReferences.end());
 	for (Json::Value& it: externalReferences | ranges::views::values)
 		externalReferencesJson.append(std::move(it));
 
