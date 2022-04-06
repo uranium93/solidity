@@ -7,6 +7,7 @@ Language Features:
 
 
 Compiler Features:
+ * Yul Optimizer: Simplify the starting offset of zero-length operations to zero.
 
 
 Bugfixes:
