@@ -6,7 +6,6 @@ import {RGBColor as ThatColor} from "../goto/lib.sol";
 contract C
 {
     function other() public pure returns (ThatColor memory output)
-                                                            // ^ @OutputDef
     {
         output.red = 50;
         // ^ @OutputWrite
@@ -16,6 +15,7 @@ contract C
         //                   ^ @GreenUse
     }
 }
+
 // ----
 // lib: @diagnostics 2072
 // -> textDocument/documentHighlight {
@@ -40,11 +40,11 @@ contract C
 //         "range": {
 //             "end": {
 //                 "character": 14,
-//                 "line": 10
+//                 "line": 9
 //             },
 //             "start": {
 //                 "character": 8,
-//                 "line": 10
+//                 "line": 9
 //             }
 //         }
 //     },
@@ -53,11 +53,11 @@ contract C
 //         "range": {
 //             "end": {
 //                 "character": 14,
-//                 "line": 12
+//                 "line": 11
 //             },
 //             "start": {
 //                 "character": 8,
-//                 "line": 12
+//                 "line": 11
 //             }
 //         }
 //     },
@@ -66,11 +66,11 @@ contract C
 //         "range": {
 //             "end": {
 //                 "character": 29,
-//                 "line": 12
+//                 "line": 11
 //             },
 //             "start": {
 //                 "character": 23,
-//                 "line": 12
+//                 "line": 11
 //             }
 //         }
 //     },
@@ -79,11 +79,11 @@ contract C
 //         "range": {
 //             "end": {
 //                 "character": 14,
-//                 "line": 14
+//                 "line": 13
 //             },
 //             "start": {
 //                 "character": 8,
-//                 "line": 14
+//                 "line": 13
 //             }
 //         }
 //     },
@@ -92,11 +92,11 @@ contract C
 //         "range": {
 //             "end": {
 //                 "character": 28,
-//                 "line": 14
+//                 "line": 13
 //             },
 //             "start": {
 //                 "character": 22,
-//                 "line": 14
+//                 "line": 13
 //             }
 //         }
 //     }
@@ -110,11 +110,11 @@ contract C
 //         "range": {
 //             "end": {
 //                 "character": 20,
-//                 "line": 12
+//                 "line": 11
 //             },
 //             "start": {
 //                 "character": 8,
-//                 "line": 12
+//                 "line": 11
 //             }
 //         }
 //     },
@@ -123,11 +123,11 @@ contract C
 //         "range": {
 //             "end": {
 //                 "character": 34,
-//                 "line": 14
+//                 "line": 13
 //             },
 //             "start": {
 //                 "character": 22,
-//                 "line": 14
+//                 "line": 13
 //             }
 //         }
 //     }
@@ -141,11 +141,11 @@ contract C
 //         "range": {
 //             "end": {
 //                 "character": 20,
-//                 "line": 12
+//                 "line": 11
 //             },
 //             "start": {
 //                 "character": 8,
-//                 "line": 12
+//                 "line": 11
 //             }
 //         }
 //     },
@@ -154,11 +154,11 @@ contract C
 //         "range": {
 //             "end": {
 //                 "character": 34,
-//                 "line": 14
+//                 "line": 13
 //             },
 //             "start": {
 //                 "character": 22,
-//                 "line": 14
+//                 "line": 13
 //             }
 //         }
 //     }
