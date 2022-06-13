@@ -32,6 +32,7 @@
 #include <liblangutil/SourceReferenceExtractor.h>
 #include <liblangutil/CharStream.h>
 
+#include <libsolutil/CommonIO.h>
 #include <libsolutil/Visitor.h>
 #include <libsolutil/JSON.h>
 
@@ -41,6 +42,8 @@
 
 #include <ostream>
 #include <string>
+
+#include <fmt/format.h>
 
 using namespace std;
 using namespace std::string_literals;
@@ -118,7 +121,7 @@ LanguageServer::LanguageServer(Transport& _transport):
 		{"cancelRequest", [](auto, auto) {/*nothing for now as we are synchronous */}},
 		{"exit", [this](auto, auto) { m_state = (m_state == State::ShutdownRequested ? State::ExitRequested : State::ExitWithoutShutdown); }},
 		{"initialize", bind(&LanguageServer::handleInitialize, this, _1, _2)},
-		{"initialized", [](auto, auto) {}},
+		{"initialized", bind(&LanguageServer::handleInitialized, this, _1, _2)},
 		{"$/setTrace", [this](auto, Json::Value const& args) { setTrace(args["value"]); }},
 		{"shutdown", [this](auto, auto) { m_state = State::ShutdownRequested; }},
 		{"textDocument/definition", GotoDefinition(*this) },
@@ -147,6 +150,16 @@ Json::Value LanguageServer::toJson(SourceLocation const& _location)
 
 void LanguageServer::changeConfiguration(Json::Value const& _settings)
 {
+	try
+	{
+		if (_settings["analyze-all-files-in-project"])
+			m_analyzeAllFilesFromProject = _settings["analyze-all-files-in-project"].asBool();
+	}
+	catch (...)
+	{
+		throw RequestError{ErrorCode::InvalidParams};
+	}
+
 	m_settingsObject = _settings;
 	Json::Value jsonIncludePaths = _settings["include-paths"];
 
@@ -173,6 +186,18 @@ void LanguageServer::changeConfiguration(Json::Value const& _settings)
 	}
 }
 
+vector<boost::filesystem::path> LanguageServer::allSolidityFilesFromProject() const
+{
+	// Don't iterate through all .sol files recursively when project root is system root.
+	if (m_fileRepository.basePath() == "/")
+		return {};
+
+	return util::findFilesRecursively(
+		m_fileRepository.basePath(),
+		[&](boost::filesystem::path const& p) { return p.extension() == ".sol"; }
+	);
+}
+
 void LanguageServer::compile()
 {
 	// For files that are not open, we have to take changes on disk into account,
@@ -181,6 +206,18 @@ void LanguageServer::compile()
 	FileRepository oldRepository(m_fileRepository.basePath(), m_fileRepository.includePaths());
 	swap(oldRepository, m_fileRepository);
 
+	// Load all solidity files from project.
+	if (m_analyzeAllFilesFromProject)
+		for (auto const& projectFile: allSolidityFilesFromProject())
+		{
+			lspDebug(fmt::format("adding project file: {}", projectFile.generic_string()));
+			m_fileRepository.setSourceByUri(
+				m_fileRepository.sourceUnitNameToUri(projectFile.generic_string()),
+				util::readFileAsString(projectFile)
+			);
+		}
+
+	// Overwrite all files as opened by the client and might potentially have changes.
 	for (string const& fileName: m_openFiles)
 		m_fileRepository.setSourceByUri(
 			fileName,
@@ -269,6 +306,7 @@ bool LanguageServer::run()
 			{
 				string const methodName = (*jsonMessage)["method"].asString();
 				id = (*jsonMessage)["id"];
+				lspDebug(fmt::format("received method call: {}", methodName));
 
 				if (auto handler = util::valueOrDefault(m_handlers, methodName))
 					handler(id, (*jsonMessage)["params"]);
@@ -345,6 +383,13 @@ void LanguageServer::handleInitialize(MessageID _id, Json::Value const& _args)
 	replyArgs["capabilities"]["renameProvider"] = true;
 
 	m_client.reply(_id, move(replyArgs));
+}
+
+void LanguageServer::handleInitialized(MessageID, Json::Value const&)
+{
+	lspDebug(fmt::format("handle initialized notification: {}", m_analyzeAllFilesFromProject ? "analyze-all-files-in-project" : "analyze-files-on-demand"));
+	if (m_analyzeAllFilesFromProject)
+		compileAndUpdateDiagnostics();
 }
 
 void LanguageServer::semanticTokensFull(MessageID _id, Json::Value const& _args)

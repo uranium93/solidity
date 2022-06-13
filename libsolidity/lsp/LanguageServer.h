@@ -68,6 +68,7 @@ private:
 	/// Reports an error and returns false if not.
 	void requireServerInitialized();
 	void handleInitialize(MessageID _id, Json::Value const& _args);
+	void handleInitialized(MessageID _id, Json::Value const& _args);
 	void handleWorkspaceDidChangeConfiguration(Json::Value const& _args);
 	void setTrace(Json::Value const& _args);
 	void handleTextDocumentDidOpen(Json::Value const& _args);
@@ -82,6 +83,9 @@ private:
 
 	/// Compile everything until after analysis phase.
 	void compile();
+
+	std::vector<boost::filesystem::path> allSolidityFilesFromProject() const;
+
 	using MessageHandler = std::function<void(MessageID, Json::Value const&)>;
 
 	Json::Value toRange(langutil::SourceLocation const& _location);
@@ -100,6 +104,7 @@ private:
 	/// Set of source unit names for which we sent diagnostics to the client in the last iteration.
 	std::set<std::string> m_nonemptyDiagnostics;
 	FileRepository m_fileRepository;
+	bool m_analyzeAllFilesFromProject = true;
 
 	frontend::CompilerStack m_compilerStack;
 
