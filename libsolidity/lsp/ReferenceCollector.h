@@ -25,10 +25,10 @@ namespace solidity::lsp
 
 enum class DocumentHighlightKind
 {
-	Unspecified,    //!< could be for example a highlight found in a comment
-	Text,           //!< a textual occurrence
-	Read,           //!< read access to a variable
-	Write,          //!< write access to a variable
+	Unspecified = 0,    //!< could be for example a highlight found in a comment
+	Text = 1,           //!< a textual occurrence
+	Read = 2,           //!< read access to a variable
+	Write = 3,          //!< write access to a variable
 };
 
 // Represents a symbol / AST node that is to be highlighted, with some context associated.

@@ -6,12 +6,18 @@ import {RGBColor as ThatColor} from "../goto/lib.sol";
 contract C
 {
     function other() public pure returns (ThatColor memory output)
+                                                      //   ^^^^^^ @OutputDef
     {
         output.red = 50;
-        // ^ @OutputWrite
+    //  ^^^^^^ @OutputWrite1
+    //     ^ @OutputWrite
         output.green = output.red;
-        //     ^ @GreenWrite
+    //  ^^^^^^ @OutputWrite2
+    //                 ^^^^^^ @OutputRead1
+    //         ^ @GreenWrite
         output.blue = output.green;
+    //  ^^^^^^ @OutputWrite3
+    //                 ^^^^^^ @OutputRead2
         //                   ^ @GreenUse
     }
 }
@@ -24,81 +30,27 @@ contract C
 // <- [
 //     {
 //         "kind": 3,
-//         "range": {
-//             "end": {
-//                 "character": 65,
-//                 "line": 7
-//             },
-//             "start": {
-//                 "character": 59,
-//                 "line": 7
-//             }
-//         }
+//         "range": @OutputDef
 //     },
 //     {
 //         "kind": 3,
-//         "range": {
-//             "end": {
-//                 "character": 14,
-//                 "line": 9
-//             },
-//             "start": {
-//                 "character": 8,
-//                 "line": 9
-//             }
-//         }
+//         "range": @OutputWrite1
 //     },
 //     {
 //         "kind": 3,
-//         "range": {
-//             "end": {
-//                 "character": 14,
-//                 "line": 11
-//             },
-//             "start": {
-//                 "character": 8,
-//                 "line": 11
-//             }
-//         }
+//         "range": @OutputWrite2
 //     },
 //     {
 //         "kind": 2,
-//         "range": {
-//             "end": {
-//                 "character": 29,
-//                 "line": 11
-//             },
-//             "start": {
-//                 "character": 23,
-//                 "line": 11
-//             }
-//         }
+//         "range": @OutputRead1
 //     },
 //     {
 //         "kind": 3,
-//         "range": {
-//             "end": {
-//                 "character": 14,
-//                 "line": 13
-//             },
-//             "start": {
-//                 "character": 8,
-//                 "line": 13
-//             }
-//         }
+//         "range": @OutputWrite3
 //     },
 //     {
 //         "kind": 2,
-//         "range": {
-//             "end": {
-//                 "character": 28,
-//                 "line": 13
-//             },
-//             "start": {
-//                 "character": 22,
-//                 "line": 13
-//             }
-//         }
+//         "range": @OutputRead2
 //     }
 // ]
 // -> textDocument/documentHighlight {

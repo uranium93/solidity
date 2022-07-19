@@ -34,7 +34,7 @@ void SemanticHighlight::operator()(MessageID _id, Json::Value const& _args)
 		Json::Value item = Json::objectValue;
 		item["range"] = toRange(location);
 		if (kind != DocumentHighlightKind::Unspecified)
-			item["kind"] = int(kind);
+			item["kind"] = static_cast<int>(kind);
 		jsonReply.append(item);
 	}
 	client().reply(_id, jsonReply);
@@ -48,7 +48,7 @@ vector<Reference> SemanticHighlight::semanticHighlight(ASTNode const* _sourceNod
 	SourceUnit const& sourceUnit = m_server.ast(_sourceUnitName);
 
 	return ReferenceCollector::collect(_sourceNode, sourceUnit);
-#if 0
+#if 0 // TODO(pr) ensure it's all covered in ReferenceCollector before deleting this code!
 	if (auto const* declaration = dynamic_cast<Declaration const*>(_sourceNode))
 	{
 		output += ReferenceCollector::collect(declaration, sourceUnit, declaration->name());
