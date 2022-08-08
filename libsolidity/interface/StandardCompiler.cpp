@@ -1214,7 +1214,7 @@ Json::Value StandardCompiler::compileSolidity(StandardCompiler::InputsAndSetting
 		((binariesRequested && !compilationSuccess) || !analysisPerformed) &&
 		(errors.empty() && _inputsAndSettings.stopAfter >= CompilerStack::State::AnalysisPerformed)
 	)
-		return formatFatalError(Error::Type::Exception, "No error reported, but compilation failed.");
+		return formatFatalError(Error::Type::InternalCompilerError, "No error reported, but compilation failed.");
 
 	Json::Value output = Json::objectValue;
 

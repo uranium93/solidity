@@ -177,10 +177,10 @@ void SourceReferenceFormatter::printSourceLocation(SourceReference const& _ref)
 
 void SourceReferenceFormatter::printExceptionInformation(SourceReferenceExtractor::Message const& _msg)
 {
-	Error::Type type = _msg.type;
-	errorColored(Error::errorSeverity(_msg.type)) << Error::formatErrorSeverity(Error::errorSeverity(_msg.type));
+	Error::Severity severity = Error::errorSeverity(_msg.type);;
+	errorColored(severity) << Error::formatErrorSeverity(severity);
 	if (m_withErrorIds && _msg.errorId.has_value())
-		errorColored(Error::errorSeverity(type)) << " (" << _msg.errorId.value().error << ")";
+		errorColored(severity) << " (" << _msg.errorId.value().error << ")";
 	messageColored() << ": " << _msg.primary.message << '\n';
 
 	printSourceLocation(_msg.primary);
