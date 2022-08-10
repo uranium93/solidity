@@ -33,9 +33,9 @@ contract test {
 }
 // ----
 // constructor()
-// gas irOptimized: 422763
-// gas legacy: 654526
-// gas legacyOptimized: 474842
+// gas irOptimized: 421683
+// gas legacy: 637653
+// gas legacyOptimized: 467030
 // prb_pi() -> 3141592656369545286
 // gas irOptimized: 57478
 // gas legacy: 98903
